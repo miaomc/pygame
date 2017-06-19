@@ -1,8 +1,7 @@
 import pygame
 from pygame.locals import *
 from sys import exit
-from math import pi
-
+import math
 
 
 pygame.init()
@@ -49,11 +48,12 @@ while True:
     screen.fill(bg)
     screen.blit(plane, position)
 
-    pygame.draw.aaline(screen, [10,10,10], (1,1), (50,80))
-    # Draw a circle
-    pygame.draw.circle(screen, BLUE, [60, 250], 40)
+    #pygame.draw.aaline(screen, [10,10,10], (1,1), (50,80))
 
-    angle = (100/639.)*pi*2.
-    pygame.draw.arc(screen, (0,0,0), (0,0,400,479), 0, angle, 1)
+    pygame.draw.line(screen, (255,0,0), (0,0),(100,200), 1)
+    start_angle = math.radians(-45)
+    end_angle = math.radians(100)
+    pygame.draw.arc(screen, (0,0,0), (0,0,100,200), start_angle, end_angle, 1)
     #pygame.display.update()
+    
     pygame.display.flip()
