@@ -6,19 +6,21 @@ WHITE = (255, 255, 255)
 FPS = 60
 
 class Missile(pygame.sprite.Sprite):
-    def __init__(self, position, direction):
+    def __init__(self, position, direction,fuel):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
         self.direction = direction
+        self.fuel = fuel
 
 
 class HomingMissile(Missile):
-    def __init__(self, position, direction, velocity_value=3.53553, accelerate_value=0.02828):
-        Missile.__init__(self, position=position, direction=position)
+    def __init__(self, position, direction, velocity_value=3.53553, accelerate_value=0.02828, max_fuel=150):
+        Missile.__init__(self, position=position, direction=position, fuel=max_fuel)
 ##        self.velocity=  velocity
 ##        self.accelerate = accelerate
         self.velocity = [1, 1]
         self.accelerate = [0.02, -0.02]
+        
         self.image = pygame.image.load('homingmissile.png').convert()
         self.image.set_colorkey(WHITE)
         self.position = position
@@ -29,6 +31,13 @@ class HomingMissile(Missile):
             self.velocity[i] += self.accelerate[i]
             self.position[i] += self.velocity[i]
         self.rect.center = self.position
+        self.fuel -= 1
+        if self.fuel < 0:
+            self.remove()
+
+    def remove(self):
+        self.kill()
+        
     
 class Control():
     def __init__(self):
