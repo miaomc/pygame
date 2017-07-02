@@ -51,7 +51,7 @@ class Missile(pygame.sprite.Sprite):
         
 
 class HomingMissile(Missile):
-    def __init__(self, position, velocity, max_acceleration_vertical=0.01414, max_acceleration_parallel=0.01414, fuel=150):
+    def __init__(self, position, velocity, max_acceleration_vertical=0.05414, max_acceleration_parallel=0.01414, fuel=250):
         Missile.__init__(self, position=position, velocity=velocity, max_acceleration=max_acceleration_parallel, fuel=fuel)
 
         #self.target_position = target_position  # [x,y]
@@ -70,23 +70,21 @@ class HomingMissile(Missile):
             angle_velocity = math.atan2(y,x)
             x1,y1 = self.position
             x2,y2 = target_position
-            angle_2target = math.atan2(y1-y2,x1-x2)
-            angle_between = angle_2target - angle_velocity
-            print angle_velocity,angle_between,
+            angle_2target = math.atan2(y2-y1,x2-x1)
+            angle_between = -angle_2target + angle_velocity
+
             # calculate the vertical acceleration whether reach the target
             expect_acc = math.tan(angle_between)*math.sqrt(x*x+y*y)
             if abs(expect_acc) < self.max_acceleration_vertical:
-                acc = expect_acc
+                acc = abs(expect_acc) * (1 and 0<angle_between<math.pi or -1)
             else:
-                acc = expect_acc/abs(expect_acc)*self.max_acceleration_vertical
-            
+                acc = self.max_acceleration_vertical * (1 and 0<angle_between<math.pi or -1)
+
             # modify the velocity
-            print self.velocity,'--',
             x += math.sin(angle_velocity)*acc
-            y += math.cos(angle_velocity)*acc
+            y += -math.cos(angle_velocity)*acc
             self.velocity = [x,y]
-            print self.velocity,'----',
-            print acc,math.sin(angle_velocity)*acc,math.cos(angle_velocity)*acc,' = ',
+            
             # modify the position
             self.position[0] += self.velocity[0]
             self.position[1] += self.velocity[1]
@@ -115,12 +113,12 @@ class Control():
         #self.groups.add( Missile([10,400], [2,-2]) )
 
         self.groups_homing = pygame.sprite.Group()
-        #self.groups_homing.add(HomingMissile([20,400],[1,0]))
-        #self.groups_homing.add(HomingMissile([20,400],[1,-1]))
-        self.groups_homing.add(HomingMissile([20,400],[1,1]))
-        #self.groups_homing.add(HomingMissile([20,400],[0,1]))
-        #self.groups_homing.add(HomingMissile([20,400],[2,3]))
-        #self.groups_homing.add(HomingMissile([20,400],[1,1.5]))
+        self.groups_homing.add(HomingMissile([20,40],[1,0]))
+        self.groups_homing.add(HomingMissile([20,40],[1,-1]))
+        self.groups_homing.add(HomingMissile([20,40],[1,1]))
+        self.groups_homing.add(HomingMissile([20,40],[0,1]))
+        self.groups_homing.add(HomingMissile([20,40],[2,3]))
+        self.groups_homing.add(HomingMissile([20,40],[1,1.5]))
 
     def event_loop(self):
         for event in pygame.event.get():
@@ -131,7 +129,6 @@ class Control():
     def update(self):
         self.groups.update()
         self.groups_homing.update([500,100])
-        print
         
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
